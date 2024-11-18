@@ -33,7 +33,7 @@ CREATE TABLE tutorias(
     periodo_sede varchar
 );
 
---6 matriculas
+--6
 CREATE TABLE matriculas(
     id_matricula varchar(1000) PRIMARY KEY,
     pidm numeric (6),
@@ -44,7 +44,7 @@ CREATE TABLE matriculas(
     fecha_estado date
 );
 
---7 alertas_academicas
+--7 
 CREATE TABLE alertas_academicas(
     id_alerta varchar PRIMARY KEY,
     nombre_alerta varchar,
@@ -70,7 +70,6 @@ CREATE TABLE dimension_tiempo (
     fecha_fin date                   
 );
 
---INSERT DATOS
 
 DO $$ 
 DECLARE
@@ -111,7 +110,6 @@ BEGIN
     END LOOP;
 END $$;
 
-SELECT * FROM dimension_tiempo;
 
 --10
 CREATE TABLE estudiantes(
@@ -174,7 +172,6 @@ CREATE TABLE hechos_semestre(
     FOREIGN KEY (periodo) REFERENCES dimension_tiempo(semestre) 
 );
 
---RECORDAR HACER CODIGO PARA ALTERAR NOMBRE DE LA TABLA. 
 
 --13
 CREATE TABLE asignaturas_semestre(
@@ -191,7 +188,6 @@ CREATE TABLE hechos_ea(
     periodo char(6),
     id_alerta varchar,
     id_sede varchar,
-    id_tutoria varchar,
     alertas_total_estudiantes integer,
     alertas_total integer,
     mejoras_total integer,
