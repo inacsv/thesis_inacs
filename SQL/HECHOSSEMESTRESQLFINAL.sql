@@ -10,10 +10,17 @@ REFERENCES hechos_semestre (periodo, pidm);
 /* ACTUALIZAR ALERTA VCME */
 UPDATE hechos_semestre
 SET alerta_vcme = 1
-WHERE id_programa = 'NC';
+WHERE id_programa <> 'NC';
 
+/* ACTUALIZAR ESTUDIANTES CON CAMPOS NULL EN DIAGNOSTICO Y NIVELACION */ 
+UPDATE estudiantes
+SET diag_ingles = 'REPROBADO'
+WHERE diag_ingles IS NULL;
+
+
+/* TRANSFORMACION TABLA DE HECHOS SEMESTRE SQL */
 WITH conteo_calificaciones AS (
-    SELECT 
+    SELECT
         a.pidm,
         a.periodo,
         SUM(a.creditos) AS c_inscritos,
@@ -29,8 +36,7 @@ WITH conteo_calificaciones AS (
             THEN NULL
             ELSE ROUND(
                 SUM(a.calificacion * a.creditos) / NULLIF(SUM(a.creditos), 0)
-                , 2
-            )
+            , 2)
         END AS ppa
     FROM asignaturas_semestre a
     GROUP BY a.pidm, a.periodo
@@ -50,11 +56,11 @@ estudiantes_alertas AS (
             ELSE 0
         END AS alerta_nee,
         CASE
-            WHEN diag_matematica = 'REPROBADO'
+            WHEN (diag_matematica = 'REPROBADO'
                 OR diag_lenguaje = 'REPROBADO'
                 OR diag_ingles = 'REPROBADO'
                 OR niv_matematica = 'REPROBADO'
-                OR niv_lenguaje = 'REPROBADO' THEN 1
+                OR niv_lenguaje = 'REPROBADO') THEN 1
             ELSE 0
         END AS alerta_diagniv
     FROM estudiantes
@@ -71,26 +77,34 @@ SELECT
                 WHEN EXTRACT(MONTH FROM CURRENT_DATE) BETWEEN 8 AND 12 THEN '20'
             END
         THEN 0
-        WHEN (c.asignaturas_reprobadas * 100.0 / c.total_asignaturas) > 50 THEN '1'
+        WHEN c.total_asignaturas > 0 AND  -- Aseguramos que haya asignaturas inscritas
+             (c.asignaturas_reprobadas::DECIMAL * 100 / NULLIF(c.total_asignaturas, 0)) > 50 
+        THEN 1
         ELSE 0
     END AS alerta_reprobacion50,
     m.id_sede,
     m.id_matricula,
     m.alerta_ccarrera,
     m.alerta_reintegro,
-    -- Alertas de estudiantes
+    CASE 
+        WHEN e.alerta_diagniv = 1 AND c.periodo = e.cohorte_est THEN 1
+        ELSE 0 
+    END as alerta_diagniv,
     COALESCE(e.alerta_vcme, 0) as alerta_vcme,
     COALESCE(e.alerta_nee, 0) as alerta_nee,
-    COALESCE(e.alerta_diagniv, 0) as alerta_diagniv,
     e.rut_est,
     e.cohorte_est,
     e.tipo_ingreso,
     c.ppa,
-    CASE 
-    	WHEN c.ppa IS NULL THEN 0
-    	WHEN c.ppa <= 4 THEN 1
-    ELSE 0
-END AS alerta_ppa
+    CASE
+        WHEN c.ppa IS NULL THEN 0
+        WHEN c.ppa <= 4 THEN 1
+        ELSE 0
+    END AS alerta_ppa,
+    -- Campos adicionales para verificación del cálculo
+    c.total_asignaturas,
+    c.asignaturas_reprobadas,
+    ROUND((c.asignaturas_reprobadas::DECIMAL * 100 / NULLIF(c.total_asignaturas, 0))::DECIMAL, 2) as porcentaje_reprobacion
 FROM conteo_calificaciones c
 LEFT JOIN (
     SELECT

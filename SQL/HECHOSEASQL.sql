@@ -18,7 +18,6 @@ totales_originales AS (
     INNER JOIN dimension_tiempo b ON a.periodo = b.semestre
     GROUP BY a.periodo, a.id_sede
 )
-INSERT INTO hechos_ea (periodo, id_sede, seguimiento_total, mejoras_total, alertas_total_estudiantes)
 SELECT 
     ps.periodo,
     ps.id_sede,
@@ -71,7 +70,6 @@ totales_originales AS (
     CROSS JOIN alertas_academicas aa
     GROUP BY hs.periodo, hs.id_sede, aa.criterio_alerta, aa.id_alerta
 )
-INSERT INTO hechos_ea (periodo, id_sede, id_alerta, alertas_total)
 SELECT 
     psa.periodo,
     psa.id_sede,
@@ -83,3 +81,5 @@ LEFT JOIN totales_originales t
     AND psa.id_sede = t.id_sede
     AND psa.id_alerta = t.id_alerta
 ORDER BY psa.periodo, psa.id_sede, psa.id_alerta; 
+
+
