@@ -1,3 +1,5 @@
+
+
 /* SEGUIMIENTO, MEJORA, SEDE, PERIODO HECHOS EA */
 WITH periodos_sedes AS (
     SELECT DISTINCT 

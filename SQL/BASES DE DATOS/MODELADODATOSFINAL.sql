@@ -181,7 +181,8 @@ CREATE TABLE asignaturas_semestre(
     calificacion decimal(3,1),
     creditos numeric (7,3),
  	PRIMARY KEY (id_asignatura, periodo, pidm),
-    FOREIGN KEY (id_asignatura) REFERENCES asignaturas(id_asignatura));
+    FOREIGN KEY (id_asignatura) REFERENCES asignaturas(id_asignatura)
+    FOREIGN KEY (pidm, periodo) REFERENCES hechos_semestre(pidm, periodo));
 
 
 CREATE TABLE hechos_ea(

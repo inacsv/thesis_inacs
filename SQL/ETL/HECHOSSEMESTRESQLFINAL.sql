@@ -1,11 +1,4 @@
-/* CARGA HECHOS SEMESTRE */
-
-/* AGREGAR LLAVE FORANEA A ASIGNATURAS_SEMESTRE */
-ALTER TABLE asignaturas_semestre
-ADD CONSTRAINT asignaturas_semestre_fkey
-FOREIGN KEY (periodo, pidm)
-REFERENCES hechos_semestre (periodo, pidm);
-
+/* ETL HECHOS SEMESTRE */
 
 /* ACTUALIZAR ALERTA VCME */
 UPDATE hechos_semestre

@@ -185,7 +185,7 @@ LEFT JOIN totales_originales t
     AND psa.id_carrera = t.id_carrera
 ORDER BY psa.periodo, psa.id_sede, psa.id_carrera, psa.id_alerta;
 
-/* VISTA TITURIAS CAMPOS GENERAL */
+/* VISTA TUTORIAS CAMPOS GENERAL */
 CREATE VIEW tutoria_campos_general AS
 WITH columnas AS (
          SELECT tutorias.id_tutoria,
@@ -218,7 +218,8 @@ WITH columnas AS (
    FROM carrera_transformada t
      JOIN sedes m ON lower(t.sede) = lower(m.nombre_sede::text)
      JOIN dimension_tiempo d ON t.periodo = d.semestre::text
-     JOIN carreras cr ON lower(t.carrera) = lower(cr.nombre_carrera::text) AND (m.nombre_sede::text = 'Coquimbo'::text AND cr.id_carrera::text ~~ '%6'::text OR m.nombre_sede::text = 'Antofagasta'::text AND cr.id_carrera::text ~~ '%3'::text);
+     JOIN carreras cr ON lower(t.carrera) = lower(cr.nombre_carrera::text) 
+     AND (m.nombre_sede::text = 'Coquimbo'::text AND cr.id_carrera::text ~~ '%6'::text OR m.nombre_sede::text = 'Antofagasta'::text AND cr.id_carrera::text ~~ '%3'::text);
 
 
 /* VISTA TITULADOS RENUNCIAS */
